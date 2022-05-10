@@ -7,7 +7,7 @@ function Get-LenovoFirmwareInformation {
             The output contains: Server name, Server UUID, as well as a subordinate object FirmwareToPatch, which contains Component name and FixId of the firmware packages.
             All servers are checked for installed firmware states and the output object is formed dynamically so that only the packages that are actually needed can be installed if the firmware states are different.
         .EXAMPLE
-            PS > Get-LenovoFirmwareInformation -FirmwarePackage @("lnvgy_fw_uefi_ive176h-3.20_anyos_32-64","lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch") -Location "myLocation"
+            PS > Get-LenovoFirmwareInformation -FirmwarePackage @("lnvgy_fw_uefi_ive176h-3.20_anyos_32-64","lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch") -Servername "myLocation"
             Cmdlet Get-Credential an der Befehlspipelineposition 1
             Geben Sie Werte für die folgenden Parameter an:
             User: myuser
@@ -19,16 +19,16 @@ function Get-LenovoFirmwareInformation {
             Servername      UUID                             FirmwareToPatch
             ----------      ----                             ---------------
             Srv2-myLocation XXXXXYYYYYZZZZZAAAAABBBBBCCCCCDD {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
-            Srv2-myLocation XXXXXYYYYYZZZZZAAAAABBBBBCCCCCDD {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
-            Srv3-myLocation DDDDDGGGGGHHHHOOOOOIIIIILLLLLSSS {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
-            Srv3-myLocation DDDDDGGGGGHHHHOOOOOIIIIILLLLLSSS {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
+            Srv3-myLocation RRTTJJJJJJJCCCCPPPPUUUUUIIIIOOOO {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
+            Srv4-myLocation DDDDDGGGGGHHHHOOOOOIIIIILLLLLSSS {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
+            Srv5-myLocation MMMNNNNKKKKLLLLWWWWWRRRREEEEEVVV {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
         .Parameter FirmwarePackage
-            Der Name des/der Firmware-Package(s). Es kann ein einzelnes Paket oder ein Array aus mehreren Paketen sein
-        .Parameter Location
-            der Parameter kann von einem Teilstring des Servernamens bis zum komplett ausgeschriebenen Hostnames variieren.
+            The name of the firmware-package(s). It can be a string or an array of Strings and it needs to be the full name of the package, e.g.:lnvgy_fw_uefi_ive176j-3.22_anyos_32-64
+        .Parameter Servername
+            You can filter the names of the servers with this parameter. You can simply write the whole name of a server for checking single servers or a part of the name. 
         .INPUTS
             FirmwarePackage: String[]
-            Location: String
+            Servername: String
         .OUTPUTS
             PSCustomObject
         .NOTES
@@ -42,7 +42,7 @@ function Get-LenovoFirmwareInformation {
         $FirmwarePackage,
         [Parameter(Mandatory=$True)]
         [String]
-        $Location
+        $Servername
     )
     begin{
         if (!(Get-LXCAConnection)) {
@@ -57,7 +57,7 @@ function Get-LenovoFirmwareInformation {
     }
     process{
         # there is no filter parameter on Get-LXCARackServer, so we need to filter afterwards with Where-Object and select just the name, uuid, machinetype and firmwares
-        $Servers = Get-LXCARackServer | Where-Object -Property "Name" -like -value "*$($Location)*" | Select-Object Name,Uuid,MachineType,Firmwares
+        $Servers = Get-LXCARackServer | Where-Object -Property "Name" -like -value "*$($Servername)*" | Select-Object Name,Uuid,MachineType,Firmwares
         foreach ($Server in $Servers) {
             foreach ($SinglePackage in $FirmwarePackage) {
             #search for the update packages for each server
