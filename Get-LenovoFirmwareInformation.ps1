@@ -1,10 +1,10 @@
 function Get-LenovoFirmwareInformation {
         <#
         .SYNOPSIS
-            This function checks whether  a set of firmware packages or a single firmware package is installed on a specific host or set of hosts
+            This function checks whether a set of firmware packages or a single firmware package is installed on a specific host or set of hosts
         .DESCRIPTION
             This function can be used to automatically output a list of objects that do not have one or more firmware packages installed.
-            The output contains: Server name, Server UUID, as well as a subordinate object FirmwareToPatch, which contains Component name and FixId of the firmware packages.
+            The output contains: Servername, Server UUID, as well as a subordinate object FirmwareToPatch, which contains ComponentName and FixId of the firmware packages.
             All servers are checked for installed firmware states and the output object is formed dynamically so that only the packages that are actually needed can be installed if the firmware states are different.
         .EXAMPLE
             PS > Get-LenovoFirmwareInformation -FirmwarePackage @("lnvgy_fw_uefi_ive176h-3.20_anyos_32-64","lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch") -Servername "myLocation"
@@ -23,7 +23,7 @@ function Get-LenovoFirmwareInformation {
             Srv4-myLocation DDDDDGGGGGHHHHOOOOOIIIIILLLLLSSS {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
             Srv5-myLocation MMMNNNNKKKKLLLLWWWWWRRRREEEEEVVV {@{ComponentName=UEFI; FixId=lnvgy_fw_uefi_ive176h-3.20_anyos_32-64}, @{ComponentName=XCC; FixId=lnvgy_fw_xcc_cdi388m-7.80_anyos_noarch}}
         .Parameter FirmwarePackage
-            The name of the firmware-package(s). It can be a string or an array of Strings and it needs to be the full name of the package, e.g.:lnvgy_fw_uefi_ive176j-3.22_anyos_32-64
+            The name of the firmware-package(s). It can be a string or an array of strings and it needs to be the full name of the package, e.g.:lnvgy_fw_uefi_ive176j-3.22_anyos_32-64
         .Parameter Servername
             You can filter the names of the servers with this parameter. You can simply write the whole name of a server for checking single servers or a part of the name. 
         .INPUTS
